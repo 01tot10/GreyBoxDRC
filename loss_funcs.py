@@ -15,8 +15,6 @@ class DC_PreEmph(nn.Module):
 
 
     def forward(self, output, target):
-        # HAX dims
-        output, target = output.permute(0, 2, 1), target.permute(0, 2, 1)
         
         output = output.permute(0, 2, 1)
         target = target.permute(0, 2, 1)
@@ -26,7 +24,7 @@ class DC_PreEmph(nn.Module):
         target = torch.cat((torch.zeros(output.shape[0], 1, self.zPad).type_as(output), target), dim=2)
         # Apply pre-emph filter, permute because the dimension order is different for RNNs and Convs in pytorch...
         output = nn.functional.conv1d(output, self.pars.type_as(output), bias=None)
-        target = nn.functional.conv1d(target, self.pars.type_as(output), bias=None)
+        target = nn.functional.conv1d(target, self.pars.type_as(target), bias=None)
 
         return output.permute(0, 2, 1), target.permute(0, 2, 1)
 
@@ -39,6 +37,9 @@ class ESRLoss(nn.Module):
 
 
     def forward(self, output, target):
+        
+        # HAX dims
+        output, target = output.permute(0, 2, 1), target.permute(0, 2, 1)
 
         if self.dc_pre:
             output, target = self.dc_pre(output, target)
