@@ -15,6 +15,9 @@ class DC_PreEmph(nn.Module):
 
 
     def forward(self, output, target):
+        # HAX dims
+        output, target = output.permute(0, 2, 1), target.permute(0, 2, 1)
+        
         output = output.permute(0, 2, 1)
         target = target.permute(0, 2, 1)
 
